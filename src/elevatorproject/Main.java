@@ -62,7 +62,7 @@ public class Main {
         b.getController().setFloorCallList();
         b.getController().showFloorCallList();
         b.getController().assignJob();
-        b.getController().elevatorGo(b.getElevator()[2]);
+        b.getController().elevatorGo(b.getElevator()[0]);
         //b.getController().setCarCallList();
         //b.getController().showCarCallList();
   

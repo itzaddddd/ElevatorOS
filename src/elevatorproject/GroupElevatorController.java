@@ -72,8 +72,8 @@ public class GroupElevatorController {
         for(int i=0;i<c.size();i++){ //ลูปเช็คทีละคนว่าต้องการลงชั้นนี้หรือเปล่า ถ้าใช่ให้ลบออกจากลิฟต์
             p = c.get(i);
             if(p.getCarCall().getCallFloor()==eFloor){
-                (this.getFloor()[eFloor-1].getPeopleFloor()).add(p);
-                c.remove(p);
+                (this.getFloor()[eFloor-1].getPeopleFloor()).add(p); //คนที่ออกจากลิฟต์ เก็บไว้ในอาเรย์ลิสต์คนทั่วไป
+                c.remove(p); //ลบคนออกจากลิฟต์
             }
         }
         System.out.println("GoOut\nFloor : "+eFloor+"\nE passenger :"+c);
