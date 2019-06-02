@@ -7,17 +7,19 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-public class GroupElevatorController {
+public class GroupElevatorController implements Runnable {
     private Elevator elevatorGroup[];
     private Floor floor[];
     private int SelectedElevator;
     private HashMap floorCallPassenger;
     private HashMap carCallList;
+    private Time time;
     
     public GroupElevatorController(Elevator e[], Floor f[]){
         this.elevatorGroup = e;
         this.floor = f;
         this.floorCallPassenger = new HashMap<>();
+        this.time = new Time(this);
     }
     
     public Elevator[] getElevatorGroup(){
@@ -27,6 +29,10 @@ public class GroupElevatorController {
     public Floor[] getFloor(){
         return floor;
     }
+    
+    public Time getTime(){
+        return time;
+    }
        
     public void setSelectedElevator(int e){
         this.SelectedElevator = e;
@@ -35,86 +41,7 @@ public class GroupElevatorController {
     public int getSelectedElevator(){
         return SelectedElevator;
     }
-    
-    /* คนเดินเข้าลิฟต์ */
-    public void setGoToElevator(Elevator e, int eFloor){ 
-        Passenger p;
-        ArrayList c = e.getPassengerQueue(); //รายชื่อคนในลิฟต์
-        //int eFloor = e.getCurrentFloor(); //ตรวจสอบชั้นปัจจุบัน
-        //System.out.println("c :"+c+",eFloor : "+eFloor);
-        Map<Integer,ArrayList<Passenger>> f = this.getFloorCallPassenger(); //เรียกใช้ floorcall เก็บไว้ใน f
-        //System.out.println("size : "+f.size());
-        
-        if(f.containsKey(eFloor)){ //ถ้าชั้นนั้นมีคน
-            /* เพิ่มคนเข้า คิวลิฟต์ */
-            for(int i=0;i<f.get(eFloor).size();i++){ //ลูปคนในชั้น
-              p = f.get(eFloor).get(i); //ดึงคนจาก floorcall มาทำงาน
-              c.add(p);
-            }
-            /* ลบคนออกจากคิวชั้น */
-            for(int i=f.get(eFloor).size();i>0;i--){ //ลูปคนในชั้น  
-              p = f.get(eFloor).get(0); //ดึงคนจาก floorcall มาทำงาน
-              f.get(eFloor).remove(p);
-            }
-//            System.out.println("Goto\nFloor : "+eFloor);
-//            System.out.println("E passenger : "+e.getPassengerQueue());
-//            System.out.println("F passenger : "+this.getFloorCallPassenger());
-        }
-    }
-    /* เอาคนออกจากลิฟต์เมื่อถึงชั้นที่ต้องการ */
-    public void setGoOutElevator(Elevator e, int eFloor){
-        Passenger p;
-        ArrayList<Passenger> c = e.getPassengerQueue(); //รับข้อมูลคนในลิฟต์
-        ArrayList<Passenger> d = this.getFloor()[eFloor-1].getPeopleFloor();
-        for(int i=0;i<c.size();i++){ //ลูปเช็คทีละคนว่าต้องการลงชั้นนี้หรือเปล่า ถ้าใช่ให้ลบออกจากลิฟต์
-            p = c.get(i);
-            if(p.getCarCall().getCallFloor()==eFloor){
-                d.add(p); //คนที่ออกจากลิฟต์ เก็บไว้ในอาเรย์ลิสต์คนทั่วไป
-                c.remove(p); //ลบคนออกจากลิฟต์
-            }
-            /*ถ้ามีคนอยู่ชั้นหนึ่ง และdirection เป็น0(ลง) ให้ลบคนออกไปเลย เพราะถือว่าเสร็จงานแล้ว*/
-            if(p.getCarCall().getCallDirection()==0 && d.contains((Passenger)p)){
-                d.remove(p); //ลบออกจากตึก
-            }
-        }
-        System.out.println("GoOut\nFloor : "+eFloor+"\nE passenger :"+c);
-        System.out.println("People : "+this.getFloor()[eFloor-1].getPeopleFloor());
-        System.out.println("c size :"+c.size()+"\n");
-        System.out.println("d : "+d);
-    }
-    
-    public void elevatorGoUp(Elevator e){ //ลิฟต์ขึ้น ถ้าชั้นปัจจุบันยังไม่ถึงขั้นสูงสุด
-        int curFloor = e.getCurrentFloor();
-        while(curFloor<=this.getFloor().length){
-            System.out.println("CurFloor : "+curFloor);
-            this.setGoOutElevator(e, curFloor);
-            this.setGoToElevator(e, curFloor);
-            e.setDirection(1);
-            curFloor++;
-        }
-    }
-    
-    public void elevatorGoDown(Elevator e){ //ลิฟต์ลงถ้าถึงชั้นสูงสุดแล้ว
-        int curFloor = this.getFloor().length;//e.getCurrentFloor();
-        while(curFloor>=1){
-            System.out.println("CurFloor :"+curFloor);
-            this.setGoOutElevator(e, curFloor);
-            this.setGoToElevator(e, curFloor);
-            e.setDirection(0);
-            curFloor--;
-        }
-    }
-    /* ลิฟต์วิ่ง */
-    public void elevatorGo(Elevator e){
-        if(e.getDirection()==1){ /* ถ้าลิฟต์มีทิศขึ้นให้ go up ต่อแล้วค่อย go down */
-            this.elevatorGoUp(e);
-            this.elevatorGoDown(e);
-        }else{  /* ถ้าลิฟต์มีทิศลง ให้ go down แล้วค่อย go up  */
-            this.elevatorGoDown(e);
-            this.elevatorGoUp(e);
-        }
-    }
-    
+    /* 4th update - ย้าย การทำงานของลิฟต์ไปไว้ class elevator */
     public void setFloorCallList(){
         /*ค้นหาใน floorCall ของแต่ละชั้น ว่ามีชั้นไหนต้องการลิฟต์บ้าง และแต่ละชั้นมีกี่คน*/
         Passenger p; // เอาไว้เก็บค่าผู้โดยสารที่เราสนใจ
@@ -274,6 +201,20 @@ public class GroupElevatorController {
             }
             */
             cur++;
+        }
+    }
+
+    @Override
+    public void run() {
+        try{
+            while(this.getTime().getHours()<23){
+//                this.setFloorCallList();
+//                this.showFloorCallList();
+//                this.assignJob();
+                Thread.sleep(1000);
+            }
+        }catch(InterruptedException a){
+            System.out.println(a);
         }
     }
     

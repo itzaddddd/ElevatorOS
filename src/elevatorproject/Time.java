@@ -14,21 +14,25 @@ import javax.swing.Timer;
 public class Time implements Runnable{
     private static int minutes = 0;
     private static int hours = 0;
-    private Thread threadTime;
+    private GroupElevatorController controller;
     
-    public Time(){
-        threadTime = new Thread(this);
+    public Time(GroupElevatorController g){
+        this.controller = g;
     }
     
-    public void start(){
-        threadTime.start();
+    public GroupElevatorController getController(){
+        return this.controller;
     }
-    
-    public static int getMinutes(){
+
+    public int getMinutes(){
         return minutes;
     }
     
-    private static void timerTick(){
+    public int getHours(){
+        return hours;
+    }
+    
+    private void timerTick(){
         minutes++;
         if(minutes == 60){
             minutes =0;
@@ -42,14 +46,19 @@ public class Time implements Runnable{
         System.out.print(hours+":");
         if(minutes<10)System.out.print("0");
         System.out.print(minutes);
+        System.out.print("\n");
     }
     
     @Override
     public void run() {
-        
-        
-        
-        
+        while(getHours()<23){
+            try{
+                timerTick();
+                Thread.sleep(100);
+            }catch(InterruptedException a){
+                System.out.println(a);
+            }
+        }
     }
     
 }

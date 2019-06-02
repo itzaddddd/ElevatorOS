@@ -12,7 +12,7 @@ import java.time.LocalTime;
  * @author isara
  */
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         /*สร้างอา่คาร*/
         Building b = new Building(6,3,LocalTime.of(7, 0));
         
@@ -26,16 +26,20 @@ public class Main {
         for(int i=0;i<b.getNumFloor();i++){
             f[i].generatePassenger(b);
         }
+        //สร้างคน จริงๆ น่าจะต้องใช้ thread 
         /*สร้างลิฟต์*/
         System.out.println("test1");
         Elevator[] e = b.getElevator();
-        for(int j=0;j<b.getNumElevator();j++){
-            e[j] = new Elevator(j+1);
+        Thread[] t = new Thread[b.getNumElevator()]; //สร้าง thread ให้ลิฟต์แต่ละตัว
+        for(int i=0;i<b.getNumElevator();i++){
+            e[i] = new Elevator(i+1,b.getController());
+            t[i] = new Thread(e[i]);
+            //Thread e[j] = new Thread(new Elevator(0, b.getController()));
             //System.out.println("Elevator "+e[j].getNumOfElevator()+" : "+e[j].getPassenger());
         }
+        //สร้างลิฟต์ จริงๆ น่าจะใช้ thread
         
         /*แสดงข้อมูล*/
-        System.out.println(b.getNumFloor()+" "+b.getNumElevator()+" "+b.getTime());
         
         /* loop เปิดตึก */
         for(int i=0;i<b.getNumFloor();i++){
@@ -62,11 +66,26 @@ public class Main {
         b.getController().setFloorCallList();
         b.getController().showFloorCallList();
         b.getController().assignJob();
-        b.getController().elevatorGo(b.getElevator()[0]);
+        //e[0].elevatorGo(b.getController());
         //b.getController().setCarCallList();
         //b.getController().showCarCallList();
-  
         
+        for(int i=0;i<b.getNumElevator();i++){
+            try{
+                t[i].start();
+                Thread.sleep(1000);
+            }catch(InterruptedException a){
+                System.out.println("Interrupted! "+a);
+            }
+        }
+        Time tt = new Time(b.getController());
+        Thread time = new Thread(tt);
+        //Thread controller = new Thread(b.getController());
+        time.start();
+        //controller.start();
+        GeneratePassenger gen = new GeneratePassenger(b.getController(),tt);
+        Thread generate = new Thread(gen);
+        generate.start();
         
         
         

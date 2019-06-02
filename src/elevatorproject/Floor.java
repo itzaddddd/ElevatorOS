@@ -30,8 +30,9 @@ public class Floor {
         int nFloor = b.getNumFloor();
 
         String ID = UUID.randomUUID().toString(); // Create passenger ID
+        
         int randFloor = (rand.nextInt(nFloor))+1;
-        System.out.println(this.numOfFloor);
+        //System.out.println(this.numOfFloor);
         // If randFloor is the top floor, then the direction is always down
         // Else if randFloor is the main floor, then the direction is always up
         // Else the direction is chosen randomly
@@ -44,11 +45,11 @@ public class Floor {
             direction = rand.nextInt(2); // Randomly select direction
         }
 
-        Call floorCall = new Call(1, randFloor, direction, ID);
-
+        Call floorCall = new Call(1, 1, direction, ID); 
+        
         // Randomly generate an exitCall, based on randFloor
         int exitFloor = 1;
-        if(direction == 1) {
+        if(direction == 1){
 
             // Generate random number, until it's greater than randFloor
             exitFloor = (rand.nextInt(nFloor))+1;
