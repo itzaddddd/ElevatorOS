@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="JavaFXSwingApplication2_browser.jnlp">
+  <information>
+    <title>JavaFXSwingApplication2</title>
+    <vendor>darun</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="JavaFXSwingApplication2.jar" size="289083" download="eager" />
+    <jar href="lib\AbsoluteLayout.jar" size="2903" download="eager" />
+    <jar href="lib\beansbinding-1.2.1.jar" size="631289" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="Gui2"  name="JavaFXSwingApplication2" >
+  </applet-desc>
+  <update check="always"/>
+</jnlp>
