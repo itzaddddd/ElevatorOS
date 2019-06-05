@@ -12,16 +12,23 @@ import javax.swing.Timer;
  * @author isara
  */
 public class Time implements Runnable{
-    private static int minutes = 0;
-    private static int hours = 0;
+    private int minutes;
+    private int hours;
     private GroupElevatorController controller;
     
     public Time(GroupElevatorController g){
         this.controller = g;
+        this.hours = 7;
+        this.minutes = 0;
     }
     
     public GroupElevatorController getController(){
         return this.controller;
+    }
+    
+    public void setTime(int h, int m){
+        this.minutes = m;
+        this.hours = h;
     }
 
     public int getMinutes(){
@@ -32,7 +39,7 @@ public class Time implements Runnable{
         return hours;
     }
     
-    private void timerTick(){
+    public void timerTick(){
         minutes++;
         if(minutes == 60){
             minutes =0;
@@ -51,10 +58,10 @@ public class Time implements Runnable{
     
     @Override
     public void run() {
-        while(getHours()<23){
+        while(this.getHours()<19){
             try{
-                timerTick();
-                Thread.sleep(100);
+                this.timerTick();
+                Thread.sleep(500);
             }catch(InterruptedException a){
                 System.out.println(a);
             }

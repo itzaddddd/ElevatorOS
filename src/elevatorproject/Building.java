@@ -48,7 +48,7 @@ public class Building {
         this.nElevator = nElevator;
     }
     /*แสดงจำนวนลิฟต์*/
-    public int getNumElevator(){
+     public int getNumElevator(){
         return this.nElevator;
     }
     /*เพิ่มลิฟต์*/
@@ -97,23 +97,4 @@ public class Building {
     public void adjustSpeed(int speed){
         /*ปรับความเร็วการจำลอง*/
     }
-    
-    public void plusTime(int t){
-        this.time.plusMinutes(t);
-    }
-    
-    public void setTime(int hh, int mm){
-        this.time = LocalTime.of(hh, mm);
-    }
-    
-    public LocalTime getTime(){
-        return time;
-    }
-    
-    public void showTime(){
-        /*แสดงเวลา*/
-        System.out.println(time);
-    }
-     
-    
 }

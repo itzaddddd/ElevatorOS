@@ -14,6 +14,8 @@ public class Floor {
     private ArrayList<Call> carCall;
     private int numOfFloor; // ชั้นที่
     private int passengerInFloor; //จำนวนผู้โดยสารในชั้น
+    private boolean reqGoUp;
+    private boolean reqGoDown;
     
     public Floor(int numOfFloor){
         this.numOfFloor = numOfFloor;
@@ -22,62 +24,8 @@ public class Floor {
         this.people = new ArrayList<Passenger>();
         this.floorCall = new ArrayList<Call>();
         this.carCall = new ArrayList<Call>();
-    }
-    
-    public void generatePassenger(Building b){
-        /* สร้างคนในชั้น */
-        Random rand = new Random();
-        int nFloor = b.getNumFloor();
-
-        String ID = UUID.randomUUID().toString(); // Create passenger ID
-        
-        int randFloor = (rand.nextInt(nFloor))+1;
-        //System.out.println(this.numOfFloor);
-        // If randFloor is the top floor, then the direction is always down
-        // Else if randFloor is the main floor, then the direction is always up
-        // Else the direction is chosen randomly
-        int direction = 0;
-        if(randFloor == 1) {
-            direction = 1; // Direction is up
-        }else if(randFloor == (nFloor)){
-            direction = 0; // Direction is down
-        }else {
-            direction = rand.nextInt(2); // Randomly select direction
-        }
-
-        Call floorCall = new Call(1, 1, direction, ID); 
-        
-        // Randomly generate an exitCall, based on randFloor
-        int exitFloor = 1;
-        if(direction == 1){
-
-            // Generate random number, until it's greater than randFloor
-            exitFloor = (rand.nextInt(nFloor))+1;
-            while (exitFloor <= randFloor){
-                exitFloor = (rand.nextInt(nFloor))+1;
-            }
-        }else{
-
-            // Generate random number, until it's smaller than randFloor
-            exitFloor = (rand.nextInt(nFloor))+1;
-            while (exitFloor >= (randFloor)+1){
-                exitFloor = (rand.nextInt(nFloor))+1;
-            }
-        }
-
-        Call carCall = new Call(0, exitFloor, direction, ID);
-        this.passenger.add(new Passenger(floorCall, carCall, ID));
-        this.passengerInFloor++;
-        System.out.println("ID : "+ID+"\nFloorCall : "+randFloor+"\nExitFloor : "+exitFloor+"\nDirection : "+direction+"\n"); // Create a Passenger object and add it the to the passengers array 
-        
-    }
-    
-    public void addFloorCall(){
-        /* เพิ่ม call เมื่อมีการกดลิฟต์ */
-    }
-    
-    public void removeFloorCall(String ID){
-        /* ลบ call เมื่อเข้าลิฟต์แล้ว */
+        this.reqGoUp = false;
+        this.reqGoDown = false;
     }
     
     public ArrayList<Call> getFloorCall(){
@@ -88,16 +36,16 @@ public class Floor {
         return carCall;
     }
     
+    public void setReqGoUp(boolean req){
+        this.reqGoUp = req;
+    }
+ 
+    public void setReqGoDown(boolean req){
+        this.reqGoDown = req;
+    }
+    
     public void setPassengerInFloor(int pass){
         this.passengerInFloor = pass;
-    }
-    
-    public int getPassengerInFloor(){
-        return passengerInFloor;
-    }
-    
-    public void removePassengerInFloor(){
-        /*ลบผู้โดยสารหลังเข้าลิฟต์ไปแล้ว*/
     }
     
     public int getNumOfFloor(){
@@ -114,8 +62,27 @@ public class Floor {
     
     public ArrayList<Passenger> getPeopleFloor(){
         return people;
-    }    
-    
-  
-    
+    }
+    /*ต้องการขึ้นบนไหม*/
+    public boolean isReqGoUp(){
+        Queue<Passenger> q = this.getPassengerQueue(); //เรียกคิวผดส.ในชั้น
+        for(Passenger p:q){
+            if(p.getCarCall().getCallFloor()>this.getNumOfFloor() && p.getCarCall().getCallDirection()==1){ //ถ้ามีผู้โดยสารต้องการขึ้นให้ตอบว่าใช่
+                this.reqGoUp = true;
+                break; //หยุดการทำงาน
+            }
+        }
+        return this.reqGoUp;
+    }
+    /*ต้องการลงล่างไหม*/
+    public boolean isReqGoDown(){
+        Queue<Passenger> q = this.getPassengerQueue();
+        for(Passenger p:q){
+            if(p.getCarCall().getCallFloor()<this.getNumOfFloor() && p.getCarCall().getCallDirection()==0){ //ถ้ามีผู้โดยสารต้องการลงให้ตอบว่าใช่ 
+                this.reqGoDown = true;
+                break;
+            }
+        }
+        return this.reqGoDown;
+    }
 }
